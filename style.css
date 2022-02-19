@@ -118,6 +118,7 @@ body {
     display: block;
     max-width: 250px;
     word-wrap: break-word;
+    text-align: start;
     cursor: pointer;
     text-decoration: none;
     transition: transform 100ms ease;

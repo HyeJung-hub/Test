@@ -8,6 +8,10 @@ const unBtn = document.querySelector('.select__un');
 const all = document.querySelector('.all');
 const undone = document.querySelector('.undone');
 const done = document.querySelector('.done__done');
+let obj = {
+    text: '',
+    isCheck: false
+};
 
 function onAdd() {
     // 1. 사용자가 입력한 텍스트를 받아옴
@@ -27,7 +31,33 @@ function onAdd() {
     input.focus();
 }
 
-let cnt = 0;
+function onReAdd(text) {
+    const item = createItem(text);
+    items.appendChild(item);
+    item.scrollIntoView({ block: 'center' });
+    input.value = '';
+    return;
+}
+
+function setStorageItem(checkId, text, check) {
+    obj.text = text;
+    obj.isCheck = check;
+    localStorage.setItem(checkId, JSON.stringify(obj));
+}
+
+let cnt;
+if (localStorage.length > 0) {
+    cnt = 0;
+    let count = localStorage.length;
+    for (let i = 0; i < count; i++) {
+        let text = JSON.parse(localStorage.getItem(i));
+        // console.log(text);
+        let value = text.text;
+        // console.log(value);
+        onReAdd(value);
+    }
+}
+else cnt = 0;
 function createItem(text) {
     const itemRow = document.createElement('li');
     itemRow.setAttribute('class', 'items__row');
@@ -60,14 +90,41 @@ function createItem(text) {
     const bundle = document.createElement('div');
     bundle.setAttribute('class', 'btnBundle');
 
+    const checkBox = document.createElement('input');
+    checkBox.setAttribute('id', `${cnt}`);
+    // console.log(`현재 cnt 값: ${cnt}`);
+    cnt++;
+    // console.log(`추가 후 cnt 값: ${cnt}`);
+    checkBox.setAttribute('type', 'checkbox');
+    checkBox.setAttribute('class', 'item__checkBox');
+
     const checkBtn = document.createElement('button');
     checkBtn.setAttribute('class', 'item__check');
     checkBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+    if (localStorage.getItem(checkBox.id) !== null) {
+        const tt = JSON.parse(localStorage.getItem(checkBox.id));
+        const c = tt.isCheck;
+        setStorageItem(checkBox.id, text, c);
+        if (c === true) {
+            checkBtn.style.color = '#91dfa8';
+            span.style.textDecoration = 'line-through';
+            span.style.color = '#b8b8b8'
+        }
+    }
+    else {
+        setStorageItem(checkBox.id, text, false);
+    }
     checkBtn.addEventListener('click', () => {
         if (span.style.textDecoration === 'none') {
             span.style.textDecoration = 'line-through';
             span.style.color = '#b8b8b8';
             checkBtn.style.color = '#91dfa8';
+            const tt = JSON.parse(localStorage.getItem(checkBox.id));
+            const t = tt.text;
+            const c = true;
+            obj.text = t;
+            obj.isCheck = c;
+            setStorageItem(checkBox.id, t, c);
             if (undone.style.fontWeight === 'bold') {
                 onUndone();
             }
@@ -79,6 +136,12 @@ function createItem(text) {
             span.style.textDecoration = 'none';
             span.style.color = 'black';
             checkBtn.style.color = 'black';
+            const tt = JSON.parse(localStorage.getItem(checkBox.id));
+            const t = tt.text;
+            const c = false;
+            obj.text = t;
+            obj.isCheck = c;
+            setStorageItem(checkBox.id, t, c);
             if (undone.style.fontWeight === 'bold') {
                 onUndone();
             }
@@ -88,26 +151,26 @@ function createItem(text) {
         }
     })
 
-    const checkBox = document.createElement('input');
-    checkBox.setAttribute('id', `${cnt}`);
-    cnt++;
-    checkBox.setAttribute('type', 'checkbox');
-    checkBox.setAttribute('class', 'item__checkBox');
-
     const deleteBtn = document.createElement('button');
     deleteBtn.setAttribute('class', 'item__delete');
     // <i></i>는 변동될 일 없으므로 
     deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
     deleteBtn.addEventListener('click', () => {
         const checkId = checkBox.getAttribute('id');
-        console.log(checkId);
         cnt = Number(checkId);
-        console.log(cnt);
         items.removeChild(itemRow);
+        localStorage.removeItem(checkId);
         const checkNum = document.querySelectorAll('.item__checkBox');
-        for (let i = checkId; i < checkNum.length; i++) {
+        for (let i = Number(checkId); i < checkNum.length; i++) {
             checkNum[i].id = `${cnt}`;
             cnt++;
+            let ts = JSON.parse(localStorage.getItem(i + 1));
+            let t = ts.text;
+            let c = ts.isCheck;
+            obj.text = t;
+            obj.isCheck = c;
+            setStorageItem(i, t, c);
+            localStorage.removeItem(i + 1);
         }
     })
 
@@ -127,13 +190,24 @@ function createItem(text) {
     return itemRow;
 }
 
+
 function onFix() {
     const span = document.querySelector('.fix');
+    const tt = document.querySelectorAll('.item__name');
     const check = document.querySelectorAll('.item__check');
     const del = document.querySelectorAll('.item__delete');
     const text = input.value;
 
     span.innerHTML = text;
+
+    for (let i = 0; i < tt.length; i++) {
+        if (tt[i].textContent === text) {
+            let ts = JSON.parse(localStorage.getItem(i));
+            const c = ts.isCheck;
+            setStorageItem(i, text, c);
+        }
+    }
+
     input.value = '';
     input.focus();
     clearBtn.innerHTML = 'clear';
@@ -238,6 +312,7 @@ clearBtn.addEventListener('click', () => {
             items.removeChild(itemRow[i]);
         }
         cnt = 0;
+        localStorage.clear();
         input.focus();
     }
     else if (clearBtn.className === 'footer__button-clear fixMode') {
@@ -309,11 +384,19 @@ delBtn.addEventListener('click', () => {
         delBtn.className = 'select__del';
         delBtn.style.display = 'none';
 
+        arr = [];
         for (let i = 0; i < check.length; i++) {
             let id = check[i].getAttribute('id');
             let isCheck = document.getElementById(`${id}`).checked;
-            if (isCheck) items.removeChild(li[i]);
+            if (isCheck) {
+                items.removeChild(li[i]);
+                localStorage.removeItem(i);
+            }
+            else {
+                arr.push(i);
+            }
         }
+        console.log(arr);
 
         cnt = 0;
         const check2 = document.querySelectorAll('.item__checkBox');
@@ -325,6 +408,13 @@ delBtn.addEventListener('click', () => {
             ch[i].style.display = 'block';
             del[i].style.display = 'block';
             cnt++;
+            let ts = JSON.parse(localStorage.getItem(arr[i]));
+            let t = ts.text;
+            let c = ts.isCheck;
+            obj.text = t;
+            obj.isCheck = c;
+            localStorage.removeItem(arr[i]);
+            setStorageItem(i, t, c);
         }
 
         clearBtn.className = 'footer__button-clear'
