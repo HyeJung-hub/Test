@@ -38,19 +38,99 @@ body {
     color: whitesmoke;
 }
 
+.sel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 400px;
+    margin-top: 5px;
+}
+
+.done {
+    display: flex;
+    margin: 0 0 0 20px;
+}
+
+.all {
+    cursor: pointer;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 4px;
+    color: rgb(224,168,210);
+    font-weight: bold;
+}
+
+.undone,
+.done__done {
+    cursor: pointer;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.select {
+    max-width: 340px;
+    margin: 5px auto;
+    height: 30px;
+    line-height: 30px;
+    text-align: end;
+    margin-right: 30px;
+}
+
+
+.select__modify {
+    display: inline-block;
+    cursor: pointer;
+    transition: transform 100ms ease;
+}
+
+.select__un,
+.select__del {
+    margin-left: 10px;
+    display: inline-block;
+    cursor: pointer;
+    transition: transform 100ms ease;
+    display: none;
+}
+
+.select__un:hover,
+.select__del:hover,
+.select__modify:hover {
+    color: rgb(253, 93, 93);
+    transform: scale(1.05);
+}
+
 .items {
+    margin-top: 0;
     height: 500px;
     overflow-y: auto;
 }
 
 .item {
+    max-width: 400px;
+    height: auto;
     display: flex;
     justify-content: space-between;
     padding: 8px 32px;
 }
 
 .item__name {
+    display: block;
+    max-width: 250px;
+    word-wrap: break-word;
+    cursor: pointer;
     text-decoration: none;
+    transition: transform 100ms ease;
+}
+
+.item__name:hover {
+    color: rgb(253, 93, 93);
+    transform: scale(1.05);
+}
+
+.btnBundle {
+    display: flex;
+    align-items: center;
 }
 
 .item__check,
@@ -65,6 +145,11 @@ body {
 .item__delete:hover {
     color: rgb(253, 93, 93);
     transform: scale(1.1);
+}
+
+.item__checkBox {
+    margin: 0 0 0 10px;
+    display: none;
 }
 
 .item__divider {
@@ -126,6 +211,7 @@ body {
     border-radius: 15px;
     /* background: transparent; */
     color: #838383c2;
+
     font-size: 20px;
     right: 20px;
     top: 18px;
