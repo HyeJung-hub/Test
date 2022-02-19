@@ -68,11 +68,23 @@ function createItem(text) {
             span.style.textDecoration = 'line-through';
             span.style.color = '#b8b8b8';
             checkBtn.style.color = '#91dfa8';
+            if (undone.style.fontWeight === 'bold') {
+                onUndone();
+            }
+            else if (done.style.fontWeight === 'bold') {
+                onDone();
+            }
         }
-        else {
+        else if (span.style.textDecoration === 'line-through') {
             span.style.textDecoration = 'none';
             span.style.color = 'black';
             checkBtn.style.color = 'black';
+            if (undone.style.fontWeight === 'bold') {
+                onUndone();
+            }
+            else if (done.style.fontWeight === 'bold') {
+                onDone();
+            }
         }
     })
 
@@ -135,6 +147,60 @@ function onFix() {
     }
 }
 
+function onAll() {
+    const row = document.querySelectorAll('.items__row');
+    all.style.color = 'rgb(224,168,210)';
+    all.style.fontWeight = 'bold';
+    undone.style.color = 'black';
+    undone.style.fontWeight = 'normal';
+    done.style.color = 'black';
+    done.style.fontWeight = 'normal';
+
+    for (let i = 0; i < row.length; i++) {
+        row[i].style.display = 'block';
+    }
+}
+
+function onUndone() {
+    const check = document.querySelectorAll('.item__name');
+    const row = document.querySelectorAll('.items__row');
+    undone.style.color = 'rgb(224,168,210)';
+    undone.style.fontWeight = 'bold';
+    all.style.color = 'black';
+    all.style.fontWeight = 'normal';
+    done.style.color = 'black';
+    done.style.fontWeight = 'normal';
+
+    for (let i = 0; i < check.length; i++) {
+        if (check[i].style.textDecoration === 'none') {
+            row[i].style.display = 'block';
+        }
+        else {
+            row[i].style.display = 'none';
+        }
+    }
+}
+
+function onDone() {
+    const check = document.querySelectorAll('.item__name');
+    const row = document.querySelectorAll('.items__row');
+    done.style.color = 'rgb(224,168,210)';
+    done.style.fontWeight = 'bold';
+    all.style.color = 'black';
+    all.style.fontWeight = 'normal';
+    undone.style.color = 'black';
+    undone.style.fontWeight = 'normal';
+
+    for (let i = 0; i < check.length; i++) {
+        if (check[i].style.textDecoration === 'line-through') {
+            row[i].style.display = 'block';
+        }
+        else {
+            row[i].style.display = 'none';
+        }
+    }
+}
+
 addBtn.addEventListener('click', () => {
     if (clearBtn.className === 'footer__button-clear') {
         onAdd();
@@ -153,57 +219,15 @@ input.addEventListener('keypress', event => {
 });
 
 all.addEventListener('click', () => {
-    const row = document.querySelectorAll('.items__row');
-    all.style.color = 'rgb(224,168,210)';
-    all.style.fontWeight = 'bold';
-    undone.style.color = 'black';
-    undone.style.fontWeight = 'normal';
-    done.style.color = 'black';
-    done.style.fontWeight = 'normal';
-
-    for (let i = 0; i < row.length; i++) {
-        row[i].style.display = 'block';
-    }
+    onAll();
 });
 
 undone.addEventListener('click', () => {
-    const check = document.querySelectorAll('.item__name');
-    const row = document.querySelectorAll('.items__row');
-    undone.style.color = 'rgb(224,168,210)';
-    undone.style.fontWeight = 'bold';
-    all.style.color = 'black';
-    all.style.fontWeight = 'normal';
-    done.style.color = 'black';
-    done.style.fontWeight = 'normal';
-
-    for (let i = 0; i < check.length; i++) {
-        if (check[i].style.textDecoration === 'none') {
-            row[i].style.display = 'block';
-        }
-        else {
-            row[i].style.display = 'none';
-        }
-    }
+    onUndone();
 });
 
 done.addEventListener('click', () => {
-    const check = document.querySelectorAll('.item__name');
-    const row = document.querySelectorAll('.items__row');
-    done.style.color = 'rgb(224,168,210)';
-    done.style.fontWeight = 'bold';
-    all.style.color = 'black';
-    all.style.fontWeight = 'normal';
-    undone.style.color = 'black';
-    undone.style.fontWeight = 'normal';
-
-    for (let i = 0; i < check.length; i++) {
-        if (check[i].style.textDecoration === 'line-through') {
-            row[i].style.display = 'block';
-        }
-        else {
-            row[i].style.display = 'none';
-        }
-    }
+    onDone();
 });
 
 clearBtn.addEventListener('click', () => {
